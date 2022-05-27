@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-describe("Atm", function () {
+describe("StakingToken", function () {
   const tokenAdress = "";
 
   this.before(async function () {
