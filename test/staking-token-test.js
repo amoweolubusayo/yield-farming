@@ -1,8 +1,9 @@
 const { expect, use } = require("chai");
 const { solidity } = require("ethereum-waffle");
+const { RewardToken, StakingToken } = "../typechain";
 use(solidity);
 
-let alice = "[CONTRACT ADDRESS]";
+let alice = "[CONTRACT_ADDRESS]";
 
 describe("StakingToken", () => {
   beforeEach(async () => {
@@ -10,6 +11,13 @@ describe("StakingToken", () => {
     this.stakeToken = await this.StakingToken.deploy(alice, 4);
     await this.stakeToken.deployed();
   });
+
+  it("Creates a new pool", async () => {
+    await expect(this.stakeToken.createStakingPool(alice))
+      .to.emit(alice, "PoolCreated")
+      .withArgs(0);
+  });
+
   it("deposit", async () => {
     await expect(this.stakeToken.deposit(1, 0)).to.be.revertedWith(
       "Deposit amount can't be zero"
