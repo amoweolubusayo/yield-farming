@@ -1,6 +1,6 @@
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
-const { alchemyApiKey, mnemonic } = require("./secrets.json");
+const { alchemyApiKey, mnemonic , etherScanKey } = require("./secrets.json");
 
 module.exports = {
   networks: {
@@ -10,7 +10,7 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: "9EIIENUCJKMA9UVGRIIY4DZV6Z9PDQ4JVH",
+    apiKey: `${etherScanKey}`,
   },
   solidity: "0.8.4",
 };
