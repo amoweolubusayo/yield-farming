@@ -6,11 +6,14 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./RewardToken.sol";
+import "./StakeToken.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract StakingToken is Ownable{
-    using SafeERC20 for IERC20; 
+contract StakingToken is Ownable, ERC20{
+    using SafeERC20 for StakeToken; 
 
    RewardToken public rewardToken; // reward Token
+   StakeToken public stakeToken;
 
     uint256 private rewardTokensPerBlock; // reward tokens gotten per block
     uint256 private constant BIG_INT_FORMATTER = 1e12; 
@@ -24,7 +27,7 @@ contract StakingToken is Ownable{
 
     // Pool information
     struct Pool {
-        IERC20 stakeToken; // Token to be staked
+        StakeToken stakeToken; // Token to be staked
         uint256 tokensStaked; // Total number of tokens staked
         uint256 lastRewardedBlock; // Last block number the user had their rewards calculated
         uint256 accumulatedRewardsPerShare; // Accumulated rewards per share times BIG_INT_FORMATTER
@@ -42,7 +45,7 @@ contract StakingToken is Ownable{
     event PoolCreated(uint256 poolId); 
 
     // Constructor
-    constructor(address _rewardTokenAddress, uint256 _rewardTokensPerBlock) {
+    constructor(address _rewardTokenAddress, uint256 _rewardTokensPerBlock) ERC20("Bare Token", "BTK"){
         rewardToken = RewardToken(_rewardTokenAddress);
         rewardTokensPerBlock = _rewardTokensPerBlock;
     }
@@ -50,7 +53,7 @@ contract StakingToken is Ownable{
     /**
      * Create the Staking pool
      */
-    function createStakingPool(IERC20 _stakeToken) external onlyOwner {
+    function createStakingPool(StakeToken _stakeToken) external onlyOwner {
         Pool memory pool;
         pool.stakeToken =  _stakeToken;
         pools.push(pool);
@@ -61,7 +64,7 @@ contract StakingToken is Ownable{
     /**
      * Deposit to pool
      */
-    function deposit(uint256 _poolId, uint256 _amount) external {
+    function deposit(uint256 _poolId, uint256 _amount) payable external{
         require(_amount > 0, "Deposit amount can't be zero");
         Pool storage pool = pools[_poolId];
         StakerInfo storage staker = stakerInfo[_poolId][msg.sender];
